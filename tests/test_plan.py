@@ -20,8 +20,10 @@ class PlanValidatorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             plan = Path(directory) / "plan.html"
             plan.write_text(
-                "<main data-plan-id='p' data-status='in_progress'>"
-                "<section data-section-id='a' data-status='complete' data-test='pytest' "
+                "<main data-plan-id='p' data-timezone='America/New_York' data-status='in_progress' "
+                "data-updated-at='2026-07-12T06:00:00-04:00'>"
+                "<section data-section-id='a' data-status='complete' data-updated-at='2026-07-12T06:00:00-04:00' "
+                "data-started-at='2026-07-12T05:00:00-04:00' data-completed-at='2026-07-12T06:00:00-04:00' data-test='pytest' "
                 "data-acceptance='works'></section></main>",
                 encoding="utf-8",
             )

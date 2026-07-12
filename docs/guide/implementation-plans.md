@@ -24,6 +24,10 @@ completion evidence, dependencies, and final sign-off. It also reports the
 first actionable section so an interrupted implementation can resume without
 guessing.
 
+Lifecycle timestamps use `America/New_York` and include the explicit ISO-8601
+offset. Every update appends a change-history entry; section start, completion,
+blockage, and plan updates are therefore auditable.
+
 Plan updates remain reviewable artifacts in the master repository. SkillOpt's
 existing staging and adoption gates apply when SkillOpt proposes changes to a
 planning skill or plan content.
