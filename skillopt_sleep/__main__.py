@@ -47,6 +47,7 @@ def _read_text(path: str) -> str:
 
 
 def _report_payload(rep, outcome) -> Dict[str, Any]:
+    approval_required = bool(outcome.staging_dir and rep.accepted and not outcome.adopted)
     return {
         "night": rep.night,
         "accepted": rep.accepted,
@@ -63,6 +64,7 @@ def _report_payload(rep, outcome) -> Dict[str, Any]:
         "notes": rep.notes,
         "staging_dir": outcome.staging_dir,
         "adopted": outcome.adopted,
+        "approval_required": approval_required,
     }
 
 
@@ -176,8 +178,8 @@ def cmd_run(args, dry: bool = False) -> int:
                 print(f"   - [{e.target}/{e.op}] {e.content}")
         if outcome.staging_dir:
             print(f"[sleep] staged: {outcome.staging_dir}")
-            if not outcome.adopted:
-                print("[sleep] review it, then: python -m skillopt_sleep adopt")
+            if rep.accepted and not outcome.adopted:
+                print("[sleep] APPROVAL REQUIRED: review the staged proposal, then: python -m skillopt_sleep adopt")
         if outcome.adopted:
             print(f"[sleep] auto-adopted: {', '.join(outcome.adopted_paths)}")
     return 0
@@ -195,7 +197,16 @@ def cmd_status(args) -> int:
         "history_tail": state.data.get("history", [])[-5:],
         "latest_staging": latest,
         "slow_memory_chars": len(state.slow_memory),
+        "approval_required": False,
     }
+    if latest:
+        manifest = os.path.join(latest, "manifest.json")
+        try:
+            with open(manifest, encoding="utf-8") as f:
+                staged = json.load(f)
+                info["approval_required"] = bool(staged.get("accepted") and not staged.get("adopted"))
+        except (OSError, ValueError):
+            info["approval_required"] = False
     if args.json:
         print(json.dumps(info, ensure_ascii=False, indent=2))
     else:
@@ -203,6 +214,8 @@ def cmd_status(args) -> int:
         print(f"[sleep] project: {project}")
         if latest:
             print(f"[sleep] latest staged proposal: {latest}")
+            if info["approval_required"]:
+                print("[sleep] APPROVAL REQUIRED: review the proposal before adopting it.")
             rp = os.path.join(latest, "report.md")
             if os.path.exists(rp):
                 with open(rp) as f:

@@ -9,14 +9,14 @@ modify it.
 
 ```bash
 python -m skillopt_sleep plan-validate \
-  --plan-path /home/user/projects/implementation-plans/plans/comfyui-newsroom-automation.html
+  --plan-path "$IMPLEMENTATION_PLANS_ROOT/plans/comfyui-newsroom-automation.html"
 ```
 
 Use JSON output for scripts:
 
 ```bash
 python -m skillopt_sleep plan-validate \
-  --plan-path /path/to/plan.html --json
+  --plan-path "$IMPLEMENTATION_PLANS_ROOT/plans/comfyui-newsroom-automation.html" --json
 ```
 
 The validator checks section status, test commands, acceptance criteria,

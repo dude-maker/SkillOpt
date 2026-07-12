@@ -40,6 +40,9 @@ def validate_plan(path: str | Path) -> dict[str, Any]:
         errors.append("missing plan id")
     if parser.plan.get("data-timezone") != "America/New_York":
         errors.append("plan timezone must be America/New_York")
+    for field in ("data-human-path", "data-codex-path", "data-opencode-path", "data-remote-url"):
+        if not parser.plan.get(field, "").strip():
+            errors.append(f"missing plan {field}")
     if not EASTERN_TIMESTAMP.match(parser.plan.get("data-updated-at", "")):
         errors.append("missing or invalid plan updated timestamp")
     if overall not in STATUSES:

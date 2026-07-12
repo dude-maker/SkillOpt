@@ -156,4 +156,9 @@ def adopt(staging_dir: str) -> List[str]:
         _backup(live, backup_dir)
         shutil.copy2(os.path.join(staging_dir, "proposed_CLAUDE.md"), live)
         updated.append(live)
+    manifest["adopted"] = True
+    manifest["adopted_at"] = time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime())
+    with open(os.path.join(staging_dir, "manifest.json"), "w", encoding="utf-8") as f:
+        json.dump(manifest, f, ensure_ascii=False, indent=2)
+        f.write("\n")
     return updated

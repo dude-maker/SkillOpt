@@ -14,13 +14,14 @@ class PlanValidatorTests(unittest.TestCase):
             self.skipTest("implementation-plans checkout is not available")
         result = validate_plan(path)
         self.assertTrue(result["valid"])
-        self.assertEqual(result["next_section"], "renderer-runtime-contract")
+        self.assertEqual(result["next_section"], "install-dgx-runtime-broker")
 
     def test_plan_validator_rejects_missing_evidence(self):
         with tempfile.TemporaryDirectory() as directory:
             plan = Path(directory) / "plan.html"
             plan.write_text(
-                "<main data-plan-id='p' data-timezone='America/New_York' data-status='in_progress' "
+                "<main data-plan-id='p' data-timezone='America/New_York' data-human-path='/human/plans' "
+                "data-codex-path='/codex/plans' data-opencode-path='/workspace/plans' data-remote-url='https://example.test/plans.git' data-status='in_progress' "
                 "data-updated-at='2026-07-12T06:00:00-04:00'>"
                 "<section data-section-id='a' data-status='complete' data-updated-at='2026-07-12T06:00:00-04:00' "
                 "data-started-at='2026-07-12T05:00:00-04:00' data-completed-at='2026-07-12T06:00:00-04:00' data-test='pytest' "

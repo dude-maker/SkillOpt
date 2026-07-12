@@ -231,6 +231,14 @@ class TestHarvest(unittest.TestCase):
         self.assertEqual(payload["n_rejected_edits"], 1)
         self.assertEqual(payload["rejected_edits"][0]["content"], "rejected rule")
 
+    def test_cli_report_payload_marks_accepted_staging_as_approval_required(self):
+        from skillopt_sleep.__main__ import _report_payload
+
+        report = SleepReport(night=1, project="/p", accepted=True)
+        outcome = type("Outcome", (), {"staging_dir": "/p/.skillopt-sleep/staging/1", "adopted": False})()
+
+        self.assertTrue(_report_payload(report, outcome)["approval_required"])
+
     def test_tasks_file_roundtrip_and_split_assignment(self):
         from skillopt_sleep.tasks_file import load_tasks_file, make_tasks_payload, write_tasks_file
 
@@ -909,6 +917,8 @@ class TestFullCycleAndAdopt(unittest.TestCase):
             self.assertTrue(os.path.exists(live_skill))
             with open(live_skill) as f:
                 self.assertIn("answer", f.read().lower())
+            with open(os.path.join(outcome.staging_dir, "manifest.json"), encoding="utf-8") as f:
+                self.assertTrue(json.load(f)["adopted"])
 
     def test_cycle_can_target_repo_scoped_skill_path(self):
         with tempfile.TemporaryDirectory() as proj, tempfile.TemporaryDirectory() as home:
