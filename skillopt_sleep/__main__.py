@@ -319,6 +319,9 @@ def main(argv=None) -> int:
     p_unsched = sub.add_parser("unschedule", help="remove the nightly cron entry")
     _add_common(p_unsched)
     p_unsched.add_argument("--all", action="store_true", help="remove all managed entries")
+    p_plan = sub.add_parser("plan-validate", help="validate a central structured HTML implementation plan")
+    p_plan.add_argument("--plan-path", required=True)
+    p_plan.add_argument("--json", action="store_true")
 
     args = parser.parse_args(argv)
     if args.cmd == "run":
@@ -335,6 +338,18 @@ def main(argv=None) -> int:
         return cmd_schedule(args)
     if args.cmd == "unschedule":
         return cmd_unschedule(args)
+    if args.cmd == "plan-validate":
+        from skillopt_sleep.plan import validate_plan
+        result = validate_plan(args.plan_path)
+        if args.json:
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        else:
+            state = "PASS" if result["valid"] else "FAIL"
+            print(f"[{state}] {result['path']}")
+            print(f"[plan] status={result['status']} next={result['next_section'] or 'none'}")
+            for error in result["errors"]:
+                print(f"  - {error}")
+        return 0 if result["valid"] else 1
     parser.print_help()
     return 2
 
