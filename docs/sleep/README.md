@@ -42,6 +42,25 @@ skillopt-sleep schedule     # install a nightly cron entry for this project
 The per-agent plugin shells below (Claude Code / Codex / Copilot) still come from the
 repo; the CLI above is the standalone, pip-only way to run a cycle.
 
+### Shared workspace installation
+
+In the multi-repository workspace, `skillopt-sleep` is canonical here and is
+registered with `agent-governance`. The workspace installer links the Codex and
+workspace OpenCode skill directories to this checkout; generated agent and
+code-server bundles are materialized by the agent-governance sync workflow.
+
+From `agent-governance`, use:
+
+```bash
+python3 scripts/validate_skill_distribution.py
+python3 scripts/sync_workspace_ai_assets.py --check
+python3 scripts/install_workspace_skills.py --check
+```
+
+Use `--write` only when you intend to update local links or generated runtime
+artifacts. These commands never commit or push changes. A SkillOpt proposal
+still requires explicit `adopt` approval before it changes a live skill.
+
 One engine, thin per-agent shells (see [`plugins/`](../../plugins)):
 
 | Platform | Folder | Install |
